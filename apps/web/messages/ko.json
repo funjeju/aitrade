@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "ATS-OS",
+    "appTagline": "AI 트레이딩 전략 운영체제",
+    "search": "검색",
+    "loading": "불러오는 중…",
+    "theme": {
+      "toggle": "테마 전환",
+      "light": "라이트",
+      "dark": "다크"
+    },
+    "language": {
+      "toggle": "언어",
+      "ko": "한국어",
+      "en": "English"
+    }
+  },
+  "nav": {
+    "dashboard": "대시보드",
+    "strategies": "전략",
+    "aiChat": "AI 전략 대화",
+    "backtest": "백테스트",
+    "scanner": "스캐너",
+    "alerts": "알림",
+    "trades": "체결",
+    "marketplace": "마켓플레이스",
+    "admin": "어드민",
+    "settings": "설정"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "subtitle": "당신의 전략 조건에 부합하는 종목과 성과를 한눈에 봅니다.",
+    "kpi": {
+      "strategies": "전략 수",
+      "winRate": "승률",
+      "avgReturn": "평균 수익",
+      "mdd": "MDD",
+      "holdingDays": "평균 보유일"
+    },
+    "empty": {
+      "title": "아직 전략이 없습니다",
+      "body": "자연어로 매매 원칙을 설명하면 AI가 검증 가능한 규칙으로 바꿔 줍니다.",
+      "cta": "AI로 전략 만들기"
+    },
+    "disclaimer": "표시되는 성과는 과거 데이터 기반이며 미래 수익을 보장하지 않습니다. 모든 판단의 주체는 사용자입니다."
+  },
+  "settings": {
+    "title": "설정",
+    "kiwoom": {
+      "title": "키움증권 연동",
+      "desc": "키움 REST API 앱키/시크릿은 서버에만 저장되며 브라우저에 노출되지 않습니다.",
+      "env": "환경",
+      "envMock": "모의투자",
+      "envReal": "실전투자",
+      "status": "상태",
+      "configured": "키 설정됨",
+      "notConfigured": "키 미설정",
+      "test": "연결 테스트",
+      "testing": "테스트 중…",
+      "connected": "연결 성공",
+      "failed": "연결 실패",
+      "expiresAt": "토큰 만료",
+      "notConfiguredHelp": ".env.local에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET를 입력하세요."
+    }
+  },
+  "auth": {
+    "signIn": "로그인",
+    "signOut": "로그아웃",
+    "guest": "게스트",
+    "role": {
+      "user": "일반",
+      "admin": "어드민",
+      "superadmin": "슈퍼어드민"
+    }
+  },
+  "errors": {
+    "notFound": "페이지를 찾을 수 없습니다.",
+    "forbidden": "이 페이지에 접근할 권한이 없습니다.",
+    "generic": "문제가 발생했습니다. 잠시 후 다시 시도하세요."
+  }
+}

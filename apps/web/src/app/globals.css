@@ -1,0 +1,15 @@
+@import "@ats/ui/tokens.css";
+@import "@ats/ui/base.css";
+
+/* 앱 전역 레이아웃 프리미티브 (토큰만 사용) */
+.app-shell {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  min-height: 100dvh;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "ATS-OS",
+    "appTagline": "AI Trading Strategy OS",
+    "search": "Search",
+    "loading": "Loading…",
+    "theme": {
+      "toggle": "Toggle theme",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "language": {
+      "toggle": "Language",
+      "ko": "한국어",
+      "en": "English"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "strategies": "Strategies",
+    "aiChat": "AI Strategy Chat",
+    "backtest": "Backtest",
+    "scanner": "Scanner",
+    "alerts": "Alerts",
+    "trades": "Trades",
+    "marketplace": "Marketplace",
+    "admin": "Admin",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "See symbols matching your strategy conditions and your performance at a glance.",
+    "kpi": {
+      "strategies": "Strategies",
+      "winRate": "Win rate",
+      "avgReturn": "Avg. return",
+      "mdd": "MDD",
+      "holdingDays": "Avg. holding days"
+    },
+    "empty": {
+      "title": "No strategies yet",
+      "body": "Describe your trading principles in plain language and AI turns them into verifiable rules.",
+      "cta": "Create a strategy with AI"
+    },
+    "disclaimer": "Performance shown is based on historical data and does not guarantee future returns. You remain the sole decision-maker."
+  },
+  "settings": {
+    "title": "Settings",
+    "kiwoom": {
+      "title": "Kiwoom Securities",
+      "desc": "Kiwoom REST API app key/secret are stored only on the server and never exposed to the browser.",
+      "env": "Environment",
+      "envMock": "Paper trading",
+      "envReal": "Live trading",
+      "status": "Status",
+      "configured": "Keys set",
+      "notConfigured": "Keys not set",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "connected": "Connected",
+      "failed": "Connection failed",
+      "expiresAt": "Token expires",
+      "notConfiguredHelp": "Set KIWOOM_APP_KEY / KIWOOM_APP_SECRET in .env.local."
+    }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "guest": "Guest",
+    "role": {
+      "user": "User",
+      "admin": "Admin",
+      "superadmin": "Superadmin"
+    }
+  },
+  "errors": {
+    "notFound": "Page not found.",
+    "forbidden": "You do not have permission to access this page.",
+    "generic": "Something went wrong. Please try again later."
+  }
+}

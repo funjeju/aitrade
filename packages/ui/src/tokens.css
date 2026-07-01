@@ -1,0 +1,120 @@
+/**
+ * ATS-OS Design Tokens — single source of truth.
+ * docs/03-design-system.md
+ *
+ * 원칙:
+ *  - 색상 리터럴 금지. 컴포넌트는 semantic 토큰(var(--...))만 참조한다.
+ *  - 테마는 토큰 값 교체로만 바뀐다 (:root = light, [data-theme="dark"] = dark override).
+ *  - raw 팔레트는 semantic 토큰 정의에서만 참조한다.
+ *  - 가격 등락색(--price-*)과 시스템 상태색(--danger 등)은 반드시 분리한다.
+ */
+
+:root {
+  /* --- raw palette (semantic 토큰 정의 전용, 컴포넌트에서 직접 쓰지 말 것) --- */
+  --raw-blue-500: #3b82f6;
+  --raw-blue-400: #4c8dff;
+  --raw-indigo-500: #6366f1;
+  --raw-indigo-300: #7c7cff;
+  --raw-red-500: #e5484d;
+  --raw-green-600: #16a34a;
+  --raw-green-500: #22c55e;
+  --raw-amber-600: #d97706;
+  --raw-amber-500: #f59e0b;
+
+  /* --- surfaces / text (LIGHT 기본) --- */
+  --bg-app: #f7f8fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --border: #e5e8ec;
+  --text-primary: #0b0e14;
+  --text-secondary: #5b6472;
+  --text-muted: #8a94a3;
+
+  /* --- brand / accent --- */
+  --brand: var(--raw-blue-500);
+  --accent: var(--raw-indigo-500);
+
+  /* --- 트레이딩 상태색 (KR 기본: 상승=적, 하락=청). locale/priceColorMode로 재매핑 가능 --- */
+  --price-up: var(--raw-red-500);
+  --price-down: var(--raw-blue-500);
+
+  /* --- 시그널 뱃지 (가격색과 분리) --- */
+  --signal-buy: var(--raw-green-600);
+  --signal-watch: var(--raw-amber-600);
+
+  /* --- 시스템 상태색 (가격색과 반드시 분리) --- */
+  --success: var(--raw-green-600);
+  --warning: var(--raw-amber-600);
+  --danger: var(--raw-red-500);
+
+  /* --- 차트 주석 토큰 --- */
+  --chart-base-candle: #8b5cf6;
+  --chart-buy-zone-1: rgba(34, 197, 94, 0.18);
+  --chart-buy-zone-2: rgba(34, 197, 94, 0.1);
+  --chart-stop-zone: rgba(229, 72, 77, 0.16);
+  --chart-trail-start: #f59e0b;
+
+  /* --- shadow (light = soft) --- */
+  --shadow-sm: 0 1px 2px rgba(11, 14, 20, 0.06);
+  --shadow-md: 0 4px 16px rgba(11, 14, 20, 0.08);
+  --shadow-glow: none;
+
+  /* --- typography --- */
+  --font-sans: "Pretendard", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  /* --- spacing (4px grid) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+
+  /* --- radius --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+:root[data-theme="dark"] {
+  --raw-blue-500: #4c8dff;
+  --raw-indigo-500: #7c7cff;
+  --raw-green-600: #22c55e;
+  --raw-amber-600: #f59e0b;
+
+  --bg-app: #0b0e14;
+  --bg-surface: #141922;
+  --bg-elevated: #1b222e;
+  --border: #26303d;
+  --text-primary: #e7ecf3;
+  --text-secondary: #9aa6b2;
+  --text-muted: #647082;
+
+  --brand: var(--raw-blue-400);
+  --accent: var(--raw-indigo-300);
+
+  --price-up: var(--raw-red-500);
+  --price-down: var(--raw-blue-400);
+
+  --signal-buy: var(--raw-green-500);
+  --signal-watch: var(--raw-amber-500);
+
+  --success: var(--raw-green-500);
+  --warning: var(--raw-amber-500);
+  --danger: var(--raw-red-500);
+
+  /* dark = border + 미세 글로우 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 0 1px var(--border), 0 0 24px rgba(76, 141, 255, 0.06);
+}
