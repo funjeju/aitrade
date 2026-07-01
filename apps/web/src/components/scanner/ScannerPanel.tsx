@@ -18,6 +18,7 @@ import {
   getCurrentDsl,
   type StrategySummary,
 } from "@/lib/strategy/strategies";
+import { saveScanMatch } from "@/lib/scan/scanMatches";
 import styles from "./ScannerPanel.module.css";
 
 type ScanRow = ScanResult & { code: string };
@@ -48,9 +49,11 @@ export function ScannerPanel() {
 
   // 선택 종목 차트
   const [usedDsl, setUsedDsl] = useState<StrategyDSL | null>(null);
+  const [usedStrategyName, setUsedStrategyName] = useState("");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [chartCandles, setChartCandles] = useState<Candle[] | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
+  const [savedCodes, setSavedCodes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) {
@@ -91,6 +94,12 @@ export function ScannerPanel() {
     setBusy(true);
     setSelectedCode(null);
     setChartCandles(null);
+    setSavedCodes(new Set());
+    setUsedStrategyName(
+      strategyId === "sample"
+        ? t("sampleStrategy")
+        : (strategies.find((s) => s.id === strategyId)?.name ?? strategyId),
+    );
     try {
       const res = await fetch("/api/kiwoom/scan", {
         method: "POST",
@@ -110,6 +119,23 @@ export function ScannerPanel() {
       setError(t("runFailed"));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function saveMatch(row: ScanRow) {
+    if (!user) return;
+    const db = getFirebaseDb();
+    if (!db) return;
+    try {
+      await saveScanMatch(db, user.uid, {
+        code: row.code,
+        name: names[row.code] ?? row.code,
+        result: row,
+        strategyName: usedStrategyName,
+      });
+      setSavedCodes((prev) => new Set(prev).add(row.code));
+    } catch {
+      /* 무시 — 저장만 실패 */
     }
   }
 
@@ -207,6 +233,7 @@ export function ScannerPanel() {
                     <th>{t("colVolume")}</th>
                     <th>{t("colMatch")}</th>
                     <th>{t("colSignal")}</th>
+                    <th>{t("colSave")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -227,6 +254,24 @@ export function ScannerPanel() {
                       <td>{mf.format(r.matchScore)}</td>
                       <td>
                         <SignalBadge signal={r.signal} />
+                      </td>
+                      <td>
+                        {!user ? (
+                          <span className={styles.saveDisabled}>{t("saveNeedLogin")}</span>
+                        ) : savedCodes.has(r.code) ? (
+                          <span className={styles.savedTag}>✓ {t("saved")}</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.saveBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void saveMatch(r);
+                            }}
+                          >
+                            {t("save")}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

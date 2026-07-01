@@ -133,6 +133,10 @@
       "colVolume": "Volume",
       "colMatch": "Match",
       "colSignal": "Signal",
+      "colSave": "Watch",
+      "save": "Save",
+      "saved": "Saved",
+      "saveNeedLogin": "Sign in",
       "signalBuy": "Entry match",
       "signalWatch": "Watch",
       "signalNone": "No match",
@@ -145,8 +149,21 @@
       "disclaimer": "Results are not stock recommendations but a match check against your own strategy conditions. You remain the decision-maker."
     },
     "alerts": {
-      "desc": "Get notified when strategy conditions are met.",
-      "phase": "2"
+      "desc": "Symbols you saved from the scanner. Keeps the signal and evidence snapshot from when you saved.",
+      "phase": "2",
+      "needLogin": "Sign in to view your watchlist.",
+      "empty": "No saved symbols yet. Save some from the scanner.",
+      "goScanner": "Go to scanner",
+      "loading": "Loading…",
+      "loadFailed": "Failed to load the list.",
+      "colSymbol": "Symbol",
+      "colSignal": "Signal",
+      "colMatch": "Match",
+      "colStrategy": "Strategy",
+      "colRef": "Ref candle",
+      "colSaved": "Saved",
+      "remove": "Remove",
+      "pushSoon": "Real-time push alerts are coming. For now, saved snapshots are kept and listed."
     },
     "trades": {
       "desc": "System-trading log that places orders only when your defined conditions are met. Opens after regulatory review.",

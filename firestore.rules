@@ -37,6 +37,13 @@ service cloud.firestore {
       }
     }
 
+    // 스캔 매치(관심종목): 소유자만. 생성 시 ownerUid는 본인.
+    match /scanMatches/{matchId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsNew();
+      allow update: if false; // 스캔 시점 스냅샷은 불변
+    }
+
     // 사용자 프로필: 본인만.
     match /users/{uid} {
       allow read, write: if isSignedIn() && request.auth.uid == uid;
