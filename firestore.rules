@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// ATS-OS Firestore 보안 규칙 (docs/05 §5.7).
+// 원칙: 사용자는 자기 문서만 읽기/쓰기. role/claims는 클라이언트가 못 바꾼다.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function ownsNew() {
+      return isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
+    }
+    function ownsExisting() {
+      return isSignedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // 전략: 소유자만. 생성 시 ownerUid는 본인이어야.
+    match /strategies/{strategyId} {
+      allow read, update, delete: if ownsExisting();
+      allow create: if ownsNew();
+
+      // 버전: 상위 전략 소유자만. (불변 — update/delete 금지)
+      match /versions/{versionId} {
+        allow read: if isSignedIn()
+          && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+        allow create: if isSignedIn()
+          && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+        allow update, delete: if false;
+
+        // 백테스트 결과
+        match /backtests/{backtestId} {
+          allow read, create: if isSignedIn()
+            && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+          allow update, delete: if false;
+        }
+      }
+    }
+
+    // 사용자 프로필: 본인만.
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // 그 외 전부 차단(명시적 화이트리스트).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

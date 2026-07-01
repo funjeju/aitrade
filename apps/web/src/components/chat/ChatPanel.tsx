@@ -2,6 +2,11 @@
 
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import type { StrategyDSL } from "@ats/strategy-engine";
+import { Link } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { getFirebaseDb } from "@/lib/firebase/client";
+import { createStrategy } from "@/lib/strategy/strategies";
 import styles from "./ChatPanel.module.css";
 
 type Turn = { role: "user" | "assistant"; content: string };
@@ -153,16 +158,69 @@ function AiMessage({ reply }: { reply: AiReply }) {
             </div>
           )}
 
-          <div className={styles.block}>
-            <div className={styles.saveRow}>
-              <button className={styles.saveBtn} disabled>
-                {t("saveDraft")}
-              </button>
-              <span className={styles.saveNote}>{t("saveNote")}</span>
-            </div>
-          </div>
+          <SaveRow dsl={reply.dsl as StrategyDSL} />
         </>
       )}
     </>
+  );
+}
+
+type SaveState =
+  | { status: "idle" }
+  | { status: "saving" }
+  | { status: "saved" }
+  | { status: "error"; message: string };
+
+function SaveRow({ dsl }: { dsl: StrategyDSL }) {
+  const t = useTranslations("aiChat");
+  const { user } = useAuth();
+  const [state, setState] = useState<SaveState>({ status: "idle" });
+
+  async function save() {
+    if (!user) return;
+    const name = window.prompt(t("saveNamePrompt"));
+    if (!name) return;
+    const db = getFirebaseDb();
+    if (!db) {
+      setState({ status: "error", message: t("saveFailed") });
+      return;
+    }
+    setState({ status: "saving" });
+    try {
+      await createStrategy(db, user.uid, { name, dsl });
+      setState({ status: "saved" });
+    } catch (e) {
+      setState({ status: "error", message: e instanceof Error ? e.message : t("saveFailed") });
+    }
+  }
+
+  return (
+    <div className={styles.block}>
+      <div className={styles.saveRow}>
+        {!user ? (
+          <>
+            <Link href="/login" className={styles.saveBtn}>
+              {t("saveNeedLogin")}
+            </Link>
+          </>
+        ) : state.status === "saved" ? (
+          <span className={styles.saveNote}>✓ {t("saved")}</span>
+        ) : (
+          <button
+            className={styles.saveBtn}
+            onClick={() => void save()}
+            disabled={state.status === "saving"}
+          >
+            {state.status === "saving" ? t("saving") : t("saveDraft")}
+          </button>
+        )}
+        {state.status === "error" && (
+          <span className={styles.saveNote}>✗ {state.message}</span>
+        )}
+        {state.status === "idle" && user && (
+          <span className={styles.saveNote}>{t("saveNote")}</span>
+        )}
+      </div>
+    </div>
   );
 }

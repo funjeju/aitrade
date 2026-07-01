@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
-import { PhasePage } from "@/components/common/PhasePage";
+import { StrategyList } from "@/components/strategy/StrategyList";
+import styles from "../page.module.css";
 
 export default async function StrategiesPage({
   params,
@@ -15,5 +16,13 @@ export default async function StrategiesPage({
 function View() {
   const nav = useTranslations("nav");
   const p = useTranslations("pages.strategies");
-  return <PhasePage title={nav("strategies")} desc={p("desc")} phase={p("phase")} />;
+  return (
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>{nav("strategies")}</h1>
+        <p className={styles.subtitle}>{p("desc")}</p>
+      </div>
+      <StrategyList />
+    </div>
+  );
 }

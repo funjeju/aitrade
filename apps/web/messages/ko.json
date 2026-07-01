@@ -49,7 +49,15 @@
     "comingSoon": "준비 중",
     "strategies": {
       "desc": "생성한 전략과 불변 버전 이력을 관리합니다. 각 버전의 변경 요약과 성과가 보존됩니다.",
-      "phase": "1"
+      "phase": "1",
+      "title": "전략",
+      "needLogin": "전략을 보려면 로그인하세요.",
+      "empty": "아직 저장한 전략이 없습니다. AI 전략 대화에서 만들어 저장하세요.",
+      "goChat": "AI로 전략 만들기",
+      "loading": "불러오는 중…",
+      "loadFailed": "목록을 불러오지 못했습니다.",
+      "version": "버전",
+      "updated": "수정"
     },
     "backtest": {
       "desc": "out-of-sample 분리와 walk-forward가 기본입니다. 승률·평균수익·MDD·보유일을 검증방식·기간·표본과 함께 표시합니다.",
@@ -84,7 +92,12 @@
     "dslTitle": "전략 규칙 초안 (DSL)",
     "transparencyTitle": "계산식 (투명성)",
     "saveDraft": "이 전략 저장",
-    "saveNote": "저장은 곧 제공됩니다. 지금은 규칙 생성·검증까지 동작합니다.",
+    "saveNote": "규칙이 검증되었습니다. 이름을 정해 저장하면 전략 목록에 버전으로 보관됩니다.",
+    "saveNeedLogin": "저장하려면 로그인이 필요합니다.",
+    "saveNamePrompt": "전략 이름을 입력하세요",
+    "saving": "저장 중…",
+    "saved": "저장됨 · 전략 목록에서 확인하세요",
+    "saveFailed": "저장 실패",
     "notConfigured": "OPENAI_API_KEY가 설정되지 않아 AI 대화를 사용할 수 없습니다. 서버 환경변수를 확인하세요.",
     "error": "AI 응답 처리 중 문제가 발생했습니다.",
     "disclaimer": "AI 산출물은 사용자가 정의한 전략 조건의 형식화이며, 투자 자문·종목 추천이 아닙니다. 판단의 주체는 사용자입니다."
@@ -112,10 +125,25 @@
     "signIn": "로그인",
     "signOut": "로그아웃",
     "guest": "게스트",
+    "anonymous": "익명 사용자",
     "role": {
       "user": "일반",
       "admin": "어드민",
       "superadmin": "슈퍼어드민"
+    },
+    "login": {
+      "title": "로그인",
+      "subtitle": "전략을 저장하려면 로그인이 필요합니다.",
+      "email": "이메일",
+      "password": "비밀번호",
+      "signInBtn": "로그인",
+      "signUpBtn": "회원가입",
+      "anonBtn": "익명으로 빠른 시작",
+      "or": "또는",
+      "notConfigured": "Firebase 인증이 설정되지 않았습니다. 환경변수를 확인하세요.",
+      "working": "처리 중…",
+      "toggleToSignUp": "계정이 없으신가요? 회원가입",
+      "toggleToSignIn": "이미 계정이 있으신가요? 로그인"
     }
   },
   "errors": {

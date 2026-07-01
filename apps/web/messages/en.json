@@ -49,7 +49,15 @@
     "comingSoon": "Coming soon",
     "strategies": {
       "desc": "Manage your strategies and their immutable version history. Each version keeps its change summary and performance.",
-      "phase": "1"
+      "phase": "1",
+      "title": "Strategies",
+      "needLogin": "Sign in to view your strategies.",
+      "empty": "No saved strategies yet. Create one in AI Strategy Chat and save it.",
+      "goChat": "Create a strategy with AI",
+      "loading": "Loading…",
+      "loadFailed": "Failed to load the list.",
+      "version": "Version",
+      "updated": "Updated"
     },
     "backtest": {
       "desc": "Out-of-sample split and walk-forward by default. Win rate, avg return, MDD and holding days shown with method, period and sample size.",
@@ -84,7 +92,12 @@
     "dslTitle": "Strategy rule draft (DSL)",
     "transparencyTitle": "Formulas (transparency)",
     "saveDraft": "Save this strategy",
-    "saveNote": "Saving is coming soon. For now, rule generation and validation work.",
+    "saveNote": "The rule is validated. Name and save it to keep it as a version in your strategy list.",
+    "saveNeedLogin": "Sign in to save.",
+    "saveNamePrompt": "Enter a strategy name",
+    "saving": "Saving…",
+    "saved": "Saved · see it in your strategy list",
+    "saveFailed": "Save failed",
     "notConfigured": "AI chat is unavailable because OPENAI_API_KEY is not set. Check server environment variables.",
     "error": "Something went wrong handling the AI response.",
     "disclaimer": "AI output is a formalization of your own strategy conditions, not investment advice or a stock recommendation. You remain the decision-maker."
@@ -112,10 +125,25 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "guest": "Guest",
+    "anonymous": "Anonymous user",
     "role": {
       "user": "User",
       "admin": "Admin",
       "superadmin": "Superadmin"
+    },
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Sign in to save your strategies.",
+      "email": "Email",
+      "password": "Password",
+      "signInBtn": "Sign in",
+      "signUpBtn": "Sign up",
+      "anonBtn": "Quick start anonymously",
+      "or": "or",
+      "notConfigured": "Firebase auth is not configured. Check environment variables.",
+      "working": "Working…",
+      "toggleToSignUp": "No account? Sign up",
+      "toggleToSignIn": "Already have an account? Sign in"
     }
   },
   "errors": {

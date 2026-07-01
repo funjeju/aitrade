@@ -2,11 +2,11 @@ import { useTranslations } from "next-intl";
 import type { Role } from "@/lib/auth/roles";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
+import { UserMenu } from "./UserMenu";
 import styles from "./Topbar.module.css";
 
-export function Topbar({ role }: { role: Role | null }) {
+export function Topbar({ role: _role }: { role: Role | null }) {
   const t = useTranslations();
-  const roleLabel = role ? t(`auth.role.${role}`) : t("auth.guest");
 
   return (
     <header className={styles.topbar}>
@@ -23,15 +23,7 @@ export function Topbar({ role }: { role: Role | null }) {
       <div className={styles.actions}>
         <LanguageToggle />
         <ThemeToggle />
-        <div className={styles.user}>
-          <span className={styles.avatar} aria-hidden>
-            G
-          </span>
-          <span className={styles.userMeta}>
-            <span className={styles.userName}>{t("auth.guest")}</span>
-            <span className={styles.userRole}>{roleLabel}</span>
-          </span>
-        </div>
+        <UserMenu />
       </div>
     </header>
   );
