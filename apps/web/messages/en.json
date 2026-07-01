@@ -42,6 +42,10 @@
       "body": "Describe your trading principles in plain language and AI turns them into verifiable rules.",
       "cta": "Create a strategy with AI"
     },
+    "kpiMeta": "Out-of-sample · {n} backtests aggregated · walk-forward",
+    "kpiNoBacktest": "You have strategies but no saved backtests, so performance is not shown.",
+    "guestHint": "Sign in to aggregate your strategies and performance.",
+    "loading": "Aggregating…",
     "disclaimer": "Performance shown is based on historical data and does not guarantee future returns. You remain the sole decision-maker."
   },
   "chart": {

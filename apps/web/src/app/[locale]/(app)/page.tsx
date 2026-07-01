@@ -1,20 +1,12 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
+import { DashboardKpis } from "@/components/dashboard/DashboardKpis";
 import styles from "./page.module.css";
 
 /**
- * 대시보드 (Phase 0: 빈 상태).
- * KPI는 아직 데이터가 없어 "—"로 표시한다. 성과 수치가 실제로 들어오면
- * 기간·표본·검증방식을 함께 표기해야 한다(P3, docs/07 완료기준 6).
+ * 대시보드. KPI는 로그인 사용자의 전략·저장된 백테스트(out-of-sample)를 집계한다.
+ * 성과 수치에는 검증방식·표본을 병기한다(P3, docs/07 완료기준 6).
  */
-const KPI_KEYS = [
-  "strategies",
-  "winRate",
-  "avgReturn",
-  "mdd",
-  "holdingDays",
-] as const;
-
 export default async function DashboardPage({
   params,
 }: {
@@ -35,22 +27,7 @@ function DashboardView() {
         <p className={styles.subtitle}>{t("subtitle")}</p>
       </div>
 
-      <section className={styles.kpiRow} aria-label={t("title")}>
-        {KPI_KEYS.map((key) => (
-          <div key={key} className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>{t(`kpi.${key}`)}</span>
-            <span className={`${styles.kpiValue} tabular`}>—</span>
-          </div>
-        ))}
-      </section>
-
-      <section className={styles.empty}>
-        <h2 className={styles.emptyTitle}>{t("empty.title")}</h2>
-        <p className={styles.emptyBody}>{t("empty.body")}</p>
-        <button type="button" className={styles.cta}>
-          {t("empty.cta")}
-        </button>
-      </section>
+      <DashboardKpis />
 
       <p className={styles.disclaimer}>{t("disclaimer")}</p>
     </div>
