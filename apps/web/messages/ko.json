@@ -62,7 +62,27 @@
     "backtest": {
       "desc": "out-of-sample 분리와 walk-forward가 기본입니다. 승률·평균수익·MDD·보유일을 검증방식·기간·표본과 함께 표시합니다.",
       "phase": "1",
-      "guard": "과최적화·look-ahead·survivorship 편향을 구조적으로 차단합니다(백테스트 가드)."
+      "guard": "과최적화·look-ahead·survivorship 편향을 구조적으로 차단합니다(백테스트 가드).",
+      "run": "백테스트 실행",
+      "running": "실행 중…",
+      "sampleBadge": "샘플 데이터 (데모)",
+      "sampleNote": "아래 결과는 실제 시장 데이터가 아니라 데모용 샘플 시계열입니다. 실데이터 연동은 Phase 2에서 제공됩니다.",
+      "method": "검증방식",
+      "walkForward": "walk-forward (in/out 분리)",
+      "period": "기간",
+      "inSample": "In-sample (학습구간)",
+      "outOfSample": "Out-of-sample (검증구간)",
+      "metricWinRate": "승률",
+      "metricAvgReturn": "평균수익률",
+      "metricMdd": "MDD",
+      "metricHolding": "평균보유(봉)",
+      "metricTrades": "거래수",
+      "samples": "표본",
+      "assumptions": "체결 가정",
+      "fee": "수수료",
+      "slippage": "슬리피지",
+      "warnings": "주의",
+      "disclaimer": "성과는 과거·샘플 데이터 기반이며 미래 수익을 보장하지 않습니다. out-of-sample 지표를 함께 보세요."
     },
     "scanner": {
       "desc": "활성 전략 조건에 부합하는 종목을 실시간 탐색합니다. 데이터 벤더 연동 후 제공됩니다.",

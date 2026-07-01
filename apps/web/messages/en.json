@@ -62,7 +62,27 @@
     "backtest": {
       "desc": "Out-of-sample split and walk-forward by default. Win rate, avg return, MDD and holding days shown with method, period and sample size.",
       "phase": "1",
-      "guard": "Structurally blocks overfitting, look-ahead and survivorship bias (backtest guard)."
+      "guard": "Structurally blocks overfitting, look-ahead and survivorship bias (backtest guard).",
+      "run": "Run backtest",
+      "running": "Running…",
+      "sampleBadge": "Sample data (demo)",
+      "sampleNote": "The results below use a demo sample series, not real market data. Real data integration comes in Phase 2.",
+      "method": "Method",
+      "walkForward": "walk-forward (in/out split)",
+      "period": "Period",
+      "inSample": "In-sample (train)",
+      "outOfSample": "Out-of-sample (validation)",
+      "metricWinRate": "Win rate",
+      "metricAvgReturn": "Avg. return",
+      "metricMdd": "MDD",
+      "metricHolding": "Avg. hold (bars)",
+      "metricTrades": "Trades",
+      "samples": "Samples",
+      "assumptions": "Fill assumptions",
+      "fee": "Fee",
+      "slippage": "Slippage",
+      "warnings": "Warnings",
+      "disclaimer": "Performance is based on past/sample data and does not guarantee future returns. Always read the out-of-sample metrics."
     },
     "scanner": {
       "desc": "Scans in real time for symbols matching your active strategy conditions. Available after data vendor integration.",

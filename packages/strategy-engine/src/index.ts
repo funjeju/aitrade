@@ -20,3 +20,13 @@ export {
   type ValidationResult,
   type ValidationIssue,
 } from "./dsl";
+export {
+  runBacktest,
+  walkForwardBacktest,
+  DEFAULT_ASSUMPTIONS,
+  type BacktestAssumptions,
+  type Trade,
+  type BacktestMetrics,
+  type BacktestResult,
+  type WalkForwardResult,
+} from "./backtest";
