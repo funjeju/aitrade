@@ -280,6 +280,7 @@
   "errors": {
     "notFound": "Page not found.",
     "forbidden": "You do not have permission to access this page.",
-    "generic": "Something went wrong. Please try again later."
+    "generic": "Something went wrong. Please try again later.",
+    "retry": "Try again"
   }
 }
