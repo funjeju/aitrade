@@ -104,7 +104,15 @@
       "fee": "Fee",
       "slippage": "Slippage",
       "warnings": "Warnings",
-      "disclaimer": "Performance is based on past/sample data and does not guarantee future returns. Always read the out-of-sample metrics."
+      "disclaimer": "Performance is based on past/sample data and does not guarantee future returns. Always read the out-of-sample metrics.",
+      "saveResult": "Save result",
+      "savingResult": "Saving…",
+      "savedResult": "Saved",
+      "saveResultNeedStrategy": "Select a saved strategy to keep results as history.",
+      "historyTitle": "Saved backtests for this strategy",
+      "historyOut": "out win rate",
+      "historyNone": "No saved backtests.",
+      "historyLoadFailed": "Failed to load history."
     },
     "scanner": {
       "desc": "Evaluates a list of symbols against your strategy conditions to find ones that currently match. Based on Kiwoom daily candles.",

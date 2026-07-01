@@ -104,7 +104,15 @@
       "fee": "수수료",
       "slippage": "슬리피지",
       "warnings": "주의",
-      "disclaimer": "성과는 과거·샘플 데이터 기반이며 미래 수익을 보장하지 않습니다. out-of-sample 지표를 함께 보세요."
+      "disclaimer": "성과는 과거·샘플 데이터 기반이며 미래 수익을 보장하지 않습니다. out-of-sample 지표를 함께 보세요.",
+      "saveResult": "결과 저장",
+      "savingResult": "저장 중…",
+      "savedResult": "저장됨",
+      "saveResultNeedStrategy": "저장한 전략을 선택하면 결과를 이력으로 보관할 수 있습니다.",
+      "historyTitle": "이 전략의 저장된 백테스트",
+      "historyOut": "out 승률",
+      "historyNone": "저장된 백테스트가 없습니다.",
+      "historyLoadFailed": "이력을 불러오지 못했습니다."
     },
     "scanner": {
       "desc": "종목 리스트를 내 전략 조건으로 평가해, 지금 조건에 부합하는 종목을 찾습니다. 키움 일봉 기준.",

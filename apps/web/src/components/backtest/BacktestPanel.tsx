@@ -18,6 +18,11 @@ import {
   getCurrentDsl,
   type StrategySummary,
 } from "@/lib/strategy/strategies";
+import {
+  saveBacktest,
+  listBacktests,
+  type SavedBacktest,
+} from "@/lib/strategy/backtests";
 import styles from "./BacktestPanel.module.css";
 
 type Source = "sample" | "kiwoom";
@@ -39,6 +44,10 @@ export function BacktestPanel() {
   const [busy, setBusy] = useState<false | "fetching" | "running">(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 결과 저장 + 이력 (저장 전략 선택 시)
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [history, setHistory] = useState<SavedBacktest[] | null>(null);
+
   // 로그인 시 내 전략 목록 로드(선택지 제공).
   useEffect(() => {
     if (!user) {
@@ -57,6 +66,41 @@ export function BacktestPanel() {
     };
   }, [user]);
 
+  // 저장 전략 선택 시 저장된 백테스트 이력 로드.
+  useEffect(() => {
+    if (strategyId === "sample" || !user) {
+      setHistory(null);
+      return;
+    }
+    const db = getFirebaseDb();
+    if (!db) return;
+    let alive = true;
+    listBacktests(db, strategyId)
+      .then((items) => alive && setHistory(items))
+      .catch(() => alive && setHistory(null));
+    return () => {
+      alive = false;
+    };
+  }, [strategyId, user]);
+
+  async function saveResult() {
+    if (!result || !user || strategyId === "sample") return;
+    const db = getFirebaseDb();
+    if (!db) return;
+    setSaveState("saving");
+    try {
+      await saveBacktest(db, strategyId, result, {
+        source,
+        symbol: source === "kiwoom" ? symbol : undefined,
+      });
+      setSaveState("saved");
+      const items = await listBacktests(db, strategyId).catch(() => null);
+      if (items) setHistory(items);
+    } catch {
+      setSaveState("idle");
+    }
+  }
+
   async function resolveDsl(): Promise<
     { ok: true; dsl: StrategyDSL; name: string } | { ok: false }
   > {
@@ -74,6 +118,7 @@ export function BacktestPanel() {
   async function run() {
     setError(null);
     setResult(null);
+    setSaveState("idle");
 
     const dslRes = await resolveDsl();
     if (!dslRes.ok) {
@@ -185,6 +230,53 @@ export function BacktestPanel() {
           strategyName={usedStrategyName}
         />
       )}
+
+      {result && user && strategyId !== "sample" && (
+        <div className={styles.saveRow}>
+          {saveState === "saved" ? (
+            <span className={styles.savedTag}>✓ {t("savedResult")}</span>
+          ) : (
+            <button
+              className={styles.saveResultBtn}
+              onClick={() => void saveResult()}
+              disabled={saveState === "saving"}
+            >
+              {saveState === "saving" ? t("savingResult") : t("saveResult")}
+            </button>
+          )}
+        </div>
+      )}
+      {result && strategyId === "sample" && (
+        <p className={styles.note}>{t("saveResultNeedStrategy")}</p>
+      )}
+
+      {history && history.length > 0 && (
+        <BacktestHistory items={history} />
+      )}
+    </div>
+  );
+}
+
+function BacktestHistory({ items }: { items: SavedBacktest[] }) {
+  const t = useTranslations("pages.backtest");
+  const locale = useLocale();
+  const pf = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 });
+  const df = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" });
+  return (
+    <div className={styles.history}>
+      <div className={styles.historyHead}>{t("historyTitle")}</div>
+      {items.map((b) => (
+        <div key={b.id} className={styles.historyRow}>
+          <span>{b.createdAt ? df.format(b.createdAt) : "—"}</span>
+          <span>
+            {b.source === "kiwoom" ? (b.symbol ?? "kiwoom") : t("sourceSample")}
+          </span>
+          <span>
+            {t("historyOut")}: <b>{pf.format(b.outOfSample?.winRate ?? 0)}</b> ·{" "}
+            {t("metricTrades")} {b.outOfSample?.tradeCount ?? 0}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
