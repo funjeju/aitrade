@@ -6,6 +6,7 @@ import { setRequestLocale, getMessages } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { priceColorInitScript } from "@/lib/prefs/priceColor";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -33,6 +34,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: priceColorInitScript }} />
+      </head>
       <body>
         <ThemeProvider>
           <NextIntlClientProvider messages={messages}>

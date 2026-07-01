@@ -118,3 +118,13 @@
   --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 0 1px var(--border), 0 0 24px rgba(76, 141, 255, 0.06);
 }
+
+/**
+ * 등락색 모드 (priceColorMode). KR 기본(상승=적/하락=청)은 위 :root 정의.
+ * US 모드는 상승=녹/하락=적. raw 팔레트를 참조하므로 라이트/다크 양쪽에서 동작한다.
+ * data-theme 블록보다 뒤에 와야 동일 특이도에서 우선한다(docs/03·06).
+ */
+:root[data-price="us"] {
+  --price-up: var(--raw-green-600);
+  --price-down: var(--raw-red-500);
+}

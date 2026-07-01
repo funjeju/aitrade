@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { getKiwoomConfig } from "@/lib/kiwoom/config";
 import { KiwoomPanel } from "@/components/settings/KiwoomPanel";
+import { PriceColorToggle } from "@/components/settings/PriceColorToggle";
 import styles from "../page.module.css";
 
 /**
@@ -35,6 +36,7 @@ function SettingsView({
       <div className={styles.header}>
         <h1 className={styles.title}>{t("title")}</h1>
       </div>
+      <PriceColorToggle />
       <KiwoomPanel configured={configured} env={env} />
     </div>
   );

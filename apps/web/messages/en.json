@@ -226,6 +226,15 @@
   },
   "settings": {
     "title": "Settings",
+    "priceColor": {
+      "title": "Up/down colors",
+      "desc": "Choose the colors for gains/losses. Korean convention is up=red; US style is up=green. (Separate from system status colors.)",
+      "kr": "Korean (up red · down blue)",
+      "us": "US (up green · down red)",
+      "preview": "Preview",
+      "up": "▲ +2.4%",
+      "down": "▼ −1.8%"
+    },
     "kiwoom": {
       "title": "Kiwoom Securities",
       "desc": "Kiwoom REST API app key/secret are stored only on the server and never exposed to the browser.",
