@@ -34,6 +34,61 @@
   background: color-mix(in srgb, var(--warning) 16%, transparent);
 }
 
+.realBadge {
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--signal-buy);
+  background: color-mix(in srgb, var(--signal-buy) 16%, transparent);
+}
+
+.sourceGroup {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.sourceBtn {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border: none;
+}
+
+.sourceBtn:hover {
+  color: var(--text-primary);
+}
+
+.sourceActive {
+  background: color-mix(in srgb, var(--brand) 16%, transparent);
+  color: var(--brand);
+}
+
+.symbolInput {
+  width: 120px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.symbolInput:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.err {
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
 .note {
   font-size: var(--text-xs);
   color: var(--text-muted);

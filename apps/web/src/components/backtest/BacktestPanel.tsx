@@ -5,50 +5,124 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   walkForwardBacktest,
   type BacktestMetrics,
+  type Candle,
   type WalkForwardResult,
 } from "@ats/strategy-engine";
 import { makeSampleCandles, SAMPLE_DSL } from "@/lib/backtest/sampleData";
 import styles from "./BacktestPanel.module.css";
 
+type Source = "sample" | "kiwoom";
+
 /**
- * 백테스트 실행 패널 (샘플 데이터, 클라이언트에서 순수 엔진 실행).
+ * 백테스트 실행 패널. 순수 엔진은 클라이언트에서 실행.
+ * 데이터 소스: 샘플(데모) 또는 키움 실데이터(일봉 API).
  * in/out-of-sample 지표를 나란히, 검증방식·기간·표본·가정과 함께 표시(backtest-guard #6).
  */
 export function BacktestPanel() {
   const t = useTranslations("pages.backtest");
+  const [source, setSource] = useState<Source>("sample");
+  const [symbol, setSymbol] = useState("005930");
   const [result, setResult] = useState<WalkForwardResult | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<false | "fetching" | "running">(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function run() {
-    setBusy(true);
-    // 결정적 샘플 데이터 → 순수 엔진. (setTimeout으로 버튼 상태 반영)
-    setTimeout(() => {
-      const candles = makeSampleCandles(250, 42);
-      const wf = walkForwardBacktest(candles, SAMPLE_DSL, {
-        inSampleRatio: 0.7,
-        universeHadDelisted: false,
-      });
-      setResult(wf);
-      setBusy(false);
-    }, 10);
+  async function run() {
+    setError(null);
+    setResult(null);
+    let candles: Candle[];
+
+    if (source === "kiwoom") {
+      const code = symbol.replace(/\D/g, "");
+      if (code.length !== 6) {
+        setError(t("fetchFailed"));
+        return;
+      }
+      setBusy("fetching");
+      try {
+        const res = await fetch(`/api/kiwoom/candles?code=${code}&count=400`);
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data?.message || t("fetchFailed"));
+          setBusy(false);
+          return;
+        }
+        candles = data.candles as Candle[];
+      } catch {
+        setError(t("fetchFailed"));
+        setBusy(false);
+        return;
+      }
+    } else {
+      candles = makeSampleCandles(250, 42);
+    }
+
+    setBusy("running");
+    const wf = walkForwardBacktest(candles, SAMPLE_DSL, {
+      inSampleRatio: 0.7,
+      universeHadDelisted: false,
+    });
+    setResult(wf);
+    setBusy(false);
   }
 
   return (
     <div className={styles.wrap}>
       <div className={styles.controls}>
-        <button className={styles.runBtn} onClick={run} disabled={busy}>
-          {busy ? t("running") : t("run")}
-        </button>
-        <span className={styles.sampleBadge}>{t("sampleBadge")}</span>
-      </div>
-      <p className={styles.note}>{t("sampleNote")}</p>
+        <div className={styles.sourceGroup} role="group">
+          <button
+            type="button"
+            className={`${styles.sourceBtn} ${source === "sample" ? styles.sourceActive : ""}`}
+            onClick={() => setSource("sample")}
+          >
+            {t("sourceSample")}
+          </button>
+          <button
+            type="button"
+            className={`${styles.sourceBtn} ${source === "kiwoom" ? styles.sourceActive : ""}`}
+            onClick={() => setSource("kiwoom")}
+          >
+            {t("sourceKiwoom")}
+          </button>
+        </div>
 
-      {result && <Results result={result} />}
+        {source === "kiwoom" && (
+          <input
+            className={styles.symbolInput}
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+            placeholder={t("symbolPlaceholder")}
+            aria-label={t("symbol")}
+            inputMode="numeric"
+            maxLength={6}
+          />
+        )}
+
+        <button className={styles.runBtn} onClick={() => void run()} disabled={Boolean(busy)}>
+          {busy === "fetching" ? t("fetching") : busy === "running" ? t("running") : t("run")}
+        </button>
+
+        <span className={source === "kiwoom" ? styles.realBadge : styles.sampleBadge}>
+          {source === "kiwoom" ? t("realBadge") : t("sampleBadge")}
+        </span>
+      </div>
+
+      <p className={styles.note}>{source === "kiwoom" ? t("realNote") : t("sampleNote")}</p>
+      {error && <p className={styles.err}>{error}</p>}
+
+      {result && <Results result={result} source={source} symbol={symbol} />}
     </div>
   );
 }
 
-function Results({ result }: { result: WalkForwardResult }) {
+function Results({
+  result,
+  source,
+  symbol,
+}: {
+  result: WalkForwardResult;
+  source: Source;
+  symbol: string;
+}) {
   const t = useTranslations("pages.backtest");
   const locale = useLocale();
   const nf = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
@@ -56,6 +130,10 @@ function Results({ result }: { result: WalkForwardResult }) {
   return (
     <>
       <div className={styles.metaRow}>
+        <span>
+          {source === "kiwoom" ? t("sourceKiwoom") : t("sourceSample")}
+          {source === "kiwoom" ? <b> · {symbol}</b> : null}
+        </span>
         <span>
           {t("method")}: <b>{t("walkForward")}</b>
         </span>
