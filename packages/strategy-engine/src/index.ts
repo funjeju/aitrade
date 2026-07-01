@@ -36,3 +36,8 @@ export {
   type ScanResult,
   type ScanContext,
 } from "./scanner";
+export {
+  strategyZones,
+  type StrategyZones,
+  type PriceBand,
+} from "./zones";

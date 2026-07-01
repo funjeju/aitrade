@@ -44,6 +44,16 @@
     },
     "disclaimer": "Performance shown is based on historical data and does not guarantee future returns. You remain the sole decision-maker."
   },
+  "chart": {
+    "title": "Chart evidence",
+    "noData": "Not enough chart data.",
+    "refCandle": "Reference candle",
+    "buyZone": "Buy zone",
+    "stopZone": "Stop zone",
+    "noRef": "No reference candle within the shown range.",
+    "evidenceNote": "The zones shown are not a buy directive — they display your strategy's reference candle and buy/stop zones as evidence.",
+    "loading": "Loading chart…"
+  },
   "pages": {
     "phaseBadge": "Phase {n}",
     "comingSoon": "Coming soon",

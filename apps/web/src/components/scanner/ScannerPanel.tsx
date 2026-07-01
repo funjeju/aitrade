@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   validateStrategyDSL,
+  type Candle,
   type ScanResult,
   type StrategyDSL,
 } from "@ats/strategy-engine";
 import { SAMPLE_DSL } from "@/lib/backtest/sampleData";
+import { ChartPreview } from "@/components/chart/ChartPreview";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import {
@@ -34,6 +36,12 @@ export function ScannerPanel() {
   const [failCount, setFailCount] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 선택 종목 차트
+  const [usedDsl, setUsedDsl] = useState<StrategyDSL | null>(null);
+  const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [chartCandles, setChartCandles] = useState<Candle[] | null>(null);
+  const [chartLoading, setChartLoading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -75,6 +83,8 @@ export function ScannerPanel() {
     if (codeList.length === 0) return;
 
     setBusy(true);
+    setSelectedCode(null);
+    setChartCandles(null);
     try {
       const res = await fetch("/api/kiwoom/scan", {
         method: "POST",
@@ -88,11 +98,31 @@ export function ScannerPanel() {
         setRows(data.matches as ScanRow[]);
         setScannedAt(data.scannedAt);
         setFailCount(Array.isArray(data.errors) ? data.errors.length : 0);
+        setUsedDsl(dsl);
       }
     } catch {
       setError(t("runFailed"));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function selectRow(code: string) {
+    if (selectedCode === code) {
+      setSelectedCode(null);
+      return;
+    }
+    setSelectedCode(code);
+    setChartCandles(null);
+    setChartLoading(true);
+    try {
+      const res = await fetch(`/api/kiwoom/candles?code=${code}&count=120`);
+      const data = await res.json();
+      if (res.ok) setChartCandles(data.candles as Candle[]);
+    } catch {
+      /* 무시 — 차트만 안 뜸 */
+    } finally {
+      setChartLoading(false);
     }
   }
 
@@ -172,7 +202,11 @@ export function ScannerPanel() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.code}>
+                    <tr
+                      key={r.code}
+                      className={`${styles.rowClickable} ${selectedCode === r.code ? styles.rowSelected : ""}`}
+                      onClick={() => void selectRow(r.code)}
+                    >
                       <td className={styles.sym}>{r.code}</td>
                       <td>{nf.format(r.price)}</td>
                       <td className={r.changePct >= 0 ? styles.up : styles.down}>
@@ -190,6 +224,15 @@ export function ScannerPanel() {
             </div>
           )}
         </>
+      )}
+
+      {selectedCode && (
+        <div>
+          {chartLoading && <p className={styles.meta}>{t("colSymbol")} {selectedCode} · …</p>}
+          {chartCandles && usedDsl && (
+            <ChartPreview candles={chartCandles} dsl={usedDsl} />
+          )}
+        </div>
       )}
 
       <p className={styles.disclaimer}>{t("disclaimer")}</p>

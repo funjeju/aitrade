@@ -114,6 +114,18 @@
   font-family: var(--font-mono);
 }
 
+.rowClickable {
+  cursor: pointer;
+}
+
+.rowClickable:hover td {
+  background: color-mix(in srgb, var(--brand) 6%, transparent);
+}
+
+.rowSelected td {
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
 .up {
   color: var(--price-up);
 }
