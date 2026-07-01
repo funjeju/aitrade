@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { Topbar } from "@/components/shell/Topbar";
+import { PrefsSync } from "@/components/prefs/PrefsSync";
 import { getCurrentRole } from "@/lib/auth/getCurrentRole";
 
 /**
@@ -21,6 +22,7 @@ export default async function AppLayout({
 
   return (
     <div className="app-shell">
+      <PrefsSync />
       <Sidebar role={role} />
       <div>
         <Topbar role={role} />
