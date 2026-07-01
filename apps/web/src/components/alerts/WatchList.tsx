@@ -73,7 +73,6 @@ export function WatchList() {
     );
   }
 
-  const nf = new Intl.NumberFormat(locale);
   const mf = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 });
   const df = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" });
 

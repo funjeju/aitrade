@@ -242,6 +242,14 @@ export function ScannerPanel() {
                       key={r.code}
                       className={`${styles.rowClickable} ${selectedCode === r.code ? styles.rowSelected : ""}`}
                       onClick={() => void selectRow(r.code)}
+                      tabIndex={0}
+                      aria-expanded={selectedCode === r.code}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          void selectRow(r.code);
+                        }
+                      }}
                     >
                       <td className={styles.sym}>
                         {names[r.code] ? `${names[r.code]} (${r.code})` : r.code}
