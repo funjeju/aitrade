@@ -71,7 +71,7 @@ export function StrategyList() {
   return (
     <div className={styles.list}>
       {state.items.map((s) => (
-        <div key={s.id} className={styles.item}>
+        <Link key={s.id} href={`/strategies/${s.id}`} className={styles.item}>
           <div>
             <div className={styles.name}>{s.name}</div>
             <div className={styles.meta}>
@@ -89,7 +89,7 @@ export function StrategyList() {
           <span className={styles.badge}>
             {t("version")} {s.currentVersion}
           </span>
-        </div>
+        </Link>
       ))}
     </div>
   );

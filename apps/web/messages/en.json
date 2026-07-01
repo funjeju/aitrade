@@ -72,7 +72,17 @@
       "loadFailed": "Failed to load the list.",
       "version": "Version",
       "versionsCount": "{n} versions",
-      "updated": "Updated"
+      "updated": "Updated",
+      "back": "← Strategies",
+      "notFound": "Strategy not found.",
+      "versionHistory": "Version history",
+      "current": "Current",
+      "parentOf": "from {v}",
+      "dslTitle": "Current version rules (DSL)",
+      "backtestsTitle": "Saved backtests",
+      "noBacktests": "No saved backtests.",
+      "btOut": "out win rate",
+      "btTrades": "trades"
     },
     "backtest": {
       "desc": "Out-of-sample split and walk-forward by default. Win rate, avg return, MDD and holding days shown with method, period and sample size.",

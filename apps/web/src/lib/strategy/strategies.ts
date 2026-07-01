@@ -135,6 +135,40 @@ export async function listVersions(
   });
 }
 
+/** 전략 메타(이름/현재버전/버전수/소유자). 없으면 null. */
+export async function getStrategy(
+  db: Firestore,
+  strategyId: string,
+): Promise<
+  | { id: string; name: string; description: string; currentVersion: string; versionCount: number; ownerUid: string }
+  | null
+> {
+  const sdoc = await getDoc(doc(db, "strategies", strategyId));
+  if (!sdoc.exists()) return null;
+  const data = sdoc.data();
+  return {
+    id: sdoc.id,
+    name: (data.name as string) ?? "(이름 없음)",
+    description: (data.description as string) ?? "",
+    currentVersion: (data.currentVersion as string) ?? "v1",
+    versionCount: (data.versionCount as number) ?? 1,
+    ownerUid: (data.ownerUid as string) ?? "",
+  };
+}
+
+/** 특정 버전의 DSL을 읽는다. 없으면 null. */
+export async function getVersionDsl(
+  db: Firestore,
+  strategyId: string,
+  versionId: string,
+): Promise<StrategyDSL | null> {
+  const vdoc = await getDoc(
+    doc(db, "strategies", strategyId, "versions", versionId),
+  );
+  if (!vdoc.exists()) return null;
+  return (vdoc.data().dsl as StrategyDSL) ?? null;
+}
+
 /** 전략의 현재 버전 DSL을 읽는다. 없으면 null. (백테스트용) */
 export async function getCurrentDsl(
   db: Firestore,

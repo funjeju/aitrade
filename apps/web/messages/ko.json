@@ -72,7 +72,17 @@
       "loadFailed": "목록을 불러오지 못했습니다.",
       "version": "버전",
       "versionsCount": "{n}개 버전",
-      "updated": "수정"
+      "updated": "수정",
+      "back": "← 전략 목록",
+      "notFound": "전략을 찾을 수 없습니다.",
+      "versionHistory": "버전 이력",
+      "current": "현재",
+      "parentOf": "이전 {v}에서",
+      "dslTitle": "현재 버전 규칙 (DSL)",
+      "backtestsTitle": "저장된 백테스트",
+      "noBacktests": "저장된 백테스트가 없습니다.",
+      "btOut": "out 승률",
+      "btTrades": "거래수"
     },
     "backtest": {
       "desc": "out-of-sample 분리와 walk-forward가 기본입니다. 승률·평균수익·MDD·보유일을 검증방식·기간·표본과 함께 표시합니다.",
