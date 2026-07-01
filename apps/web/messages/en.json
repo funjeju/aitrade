@@ -97,8 +97,29 @@
       "disclaimer": "Performance is based on past/sample data and does not guarantee future returns. Always read the out-of-sample metrics."
     },
     "scanner": {
-      "desc": "Scans in real time for symbols matching your active strategy conditions. Available after data vendor integration.",
-      "phase": "2"
+      "desc": "Evaluates a list of symbols against your strategy conditions to find ones that currently match. Based on Kiwoom daily candles.",
+      "phase": "2",
+      "strategyLabel": "Strategy",
+      "sampleStrategy": "Sample strategy (demo)",
+      "codesLabel": "Symbol codes (comma/space separated, max 20)",
+      "run": "Run scan",
+      "running": "Scanning…",
+      "colSymbol": "Symbol",
+      "colPrice": "Price",
+      "colChange": "Chg%",
+      "colVolume": "Volume",
+      "colMatch": "Match",
+      "colSignal": "Signal",
+      "signalBuy": "Entry match",
+      "signalWatch": "Watch",
+      "signalNone": "No match",
+      "scannedAt": "Scanned at",
+      "noResults": "No matching symbols.",
+      "needLogin": "Sign in to scan with a saved strategy. (Sample strategy works without login.)",
+      "loadDslFailed": "Failed to load strategy rules.",
+      "runFailed": "Scan failed.",
+      "errorsSome": "{n} symbols failed to fetch (skipped).",
+      "disclaimer": "Results are not stock recommendations but a match check against your own strategy conditions. You remain the decision-maker."
     },
     "alerts": {
       "desc": "Get notified when strategy conditions are met.",
