@@ -79,6 +79,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+.select {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
 .symbolInput:focus {
   outline: none;
   border-color: var(--brand);

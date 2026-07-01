@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   serverTimestamp,
   writeBatch,
@@ -61,6 +62,21 @@ export async function createStrategy(
   });
   await batch.commit();
   return strategyRef.id;
+}
+
+/** 전략의 현재 버전 DSL을 읽는다. 없으면 null. (백테스트용) */
+export async function getCurrentDsl(
+  db: Firestore,
+  strategyId: string,
+): Promise<StrategyDSL | null> {
+  const sdoc = await getDoc(doc(db, "strategies", strategyId));
+  if (!sdoc.exists()) return null;
+  const version = (sdoc.data().currentVersion as string) ?? "v1";
+  const vdoc = await getDoc(
+    doc(db, "strategies", strategyId, "versions", version),
+  );
+  if (!vdoc.exists()) return null;
+  return (vdoc.data().dsl as StrategyDSL) ?? null;
 }
 
 /** 내 전략 목록(최근 수정순). */

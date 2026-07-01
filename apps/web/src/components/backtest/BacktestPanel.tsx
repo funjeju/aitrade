@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   walkForwardBacktest,
+  validateStrategyDSL,
   type BacktestMetrics,
   type Candle,
+  type StrategyDSL,
   type WalkForwardResult,
 } from "@ats/strategy-engine";
 import { makeSampleCandles, SAMPLE_DSL } from "@/lib/backtest/sampleData";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { getFirebaseDb } from "@/lib/firebase/client";
+import {
+  listStrategies,
+  getCurrentDsl,
+  type StrategySummary,
+} from "@/lib/strategy/strategies";
 import styles from "./BacktestPanel.module.css";
 
 type Source = "sample" | "kiwoom";
@@ -20,15 +29,58 @@ type Source = "sample" | "kiwoom";
  */
 export function BacktestPanel() {
   const t = useTranslations("pages.backtest");
+  const { user } = useAuth();
   const [source, setSource] = useState<Source>("sample");
   const [symbol, setSymbol] = useState("005930");
+  const [strategyId, setStrategyId] = useState<string>("sample");
+  const [strategies, setStrategies] = useState<StrategySummary[]>([]);
   const [result, setResult] = useState<WalkForwardResult | null>(null);
+  const [usedStrategyName, setUsedStrategyName] = useState<string>("");
   const [busy, setBusy] = useState<false | "fetching" | "running">(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 로그인 시 내 전략 목록 로드(선택지 제공).
+  useEffect(() => {
+    if (!user) {
+      setStrategies([]);
+      setStrategyId("sample");
+      return;
+    }
+    const db = getFirebaseDb();
+    if (!db) return;
+    let alive = true;
+    listStrategies(db, user.uid)
+      .then((items) => alive && setStrategies(items))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+
+  async function resolveDsl(): Promise<
+    { ok: true; dsl: StrategyDSL; name: string } | { ok: false }
+  > {
+    if (strategyId === "sample") {
+      return { ok: true, dsl: SAMPLE_DSL, name: t("sampleStrategy") };
+    }
+    const db = getFirebaseDb();
+    if (!db) return { ok: false };
+    const dsl = await getCurrentDsl(db, strategyId);
+    if (!dsl || !validateStrategyDSL(dsl).ok) return { ok: false };
+    const name = strategies.find((s) => s.id === strategyId)?.name ?? strategyId;
+    return { ok: true, dsl, name };
+  }
 
   async function run() {
     setError(null);
     setResult(null);
+
+    const dslRes = await resolveDsl();
+    if (!dslRes.ok) {
+      setError(t("loadDslFailed"));
+      return;
+    }
+
     let candles: Candle[];
 
     if (source === "kiwoom") {
@@ -57,10 +109,11 @@ export function BacktestPanel() {
     }
 
     setBusy("running");
-    const wf = walkForwardBacktest(candles, SAMPLE_DSL, {
+    const wf = walkForwardBacktest(candles, dslRes.dsl, {
       inSampleRatio: 0.7,
       universeHadDelisted: false,
     });
+    setUsedStrategyName(dslRes.name);
     setResult(wf);
     setBusy(false);
   }
@@ -68,6 +121,21 @@ export function BacktestPanel() {
   return (
     <div className={styles.wrap}>
       <div className={styles.controls}>
+        {strategies.length > 0 && (
+          <select
+            className={styles.select}
+            value={strategyId}
+            onChange={(e) => setStrategyId(e.target.value)}
+            aria-label={t("strategyLabel")}
+          >
+            <option value="sample">{t("sampleStrategy")}</option>
+            {strategies.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        )}
         <div className={styles.sourceGroup} role="group">
           <button
             type="button"
@@ -109,7 +177,14 @@ export function BacktestPanel() {
       <p className={styles.note}>{source === "kiwoom" ? t("realNote") : t("sampleNote")}</p>
       {error && <p className={styles.err}>{error}</p>}
 
-      {result && <Results result={result} source={source} symbol={symbol} />}
+      {result && (
+        <Results
+          result={result}
+          source={source}
+          symbol={symbol}
+          strategyName={usedStrategyName}
+        />
+      )}
     </div>
   );
 }
@@ -118,10 +193,12 @@ function Results({
   result,
   source,
   symbol,
+  strategyName,
 }: {
   result: WalkForwardResult;
   source: Source;
   symbol: string;
+  strategyName: string;
 }) {
   const t = useTranslations("pages.backtest");
   const locale = useLocale();
@@ -130,6 +207,9 @@ function Results({
   return (
     <>
       <div className={styles.metaRow}>
+        <span>
+          {t("usingStrategy")}: <b>{strategyName}</b>
+        </span>
         <span>
           {source === "kiwoom" ? t("sourceKiwoom") : t("sourceSample")}
           {source === "kiwoom" ? <b> · {symbol}</b> : null}
