@@ -10,6 +10,7 @@ import {
 } from "@ats/strategy-engine";
 import { SAMPLE_DSL } from "@/lib/backtest/sampleData";
 import { ChartPreview } from "@/components/chart/ChartPreview";
+import { StockPicker } from "./StockPicker";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import {
@@ -21,7 +22,14 @@ import styles from "./ScannerPanel.module.css";
 
 type ScanRow = ScanResult & { code: string };
 
-const DEFAULT_CODES = "005930, 000660, 035420, 035720, 247540";
+const DEFAULT_CODES = ["005930", "000660", "035420", "035720", "247540"];
+const DEFAULT_NAMES: Record<string, string> = {
+  "005930": "삼성전자",
+  "000660": "SK하이닉스",
+  "035420": "NAVER",
+  "035720": "카카오",
+  "247540": "에코프로비엠",
+};
 
 export function ScannerPanel() {
   const t = useTranslations("pages.scanner");
@@ -30,7 +38,8 @@ export function ScannerPanel() {
 
   const [strategyId, setStrategyId] = useState("sample");
   const [strategies, setStrategies] = useState<StrategySummary[]>([]);
-  const [codes, setCodes] = useState(DEFAULT_CODES);
+  const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
+  const [names, setNames] = useState<Record<string, string>>(DEFAULT_NAMES);
   const [rows, setRows] = useState<ScanRow[] | null>(null);
   const [scannedAt, setScannedAt] = useState<string | null>(null);
   const [failCount, setFailCount] = useState(0);
@@ -76,10 +85,7 @@ export function ScannerPanel() {
       setError(t("loadDslFailed"));
       return;
     }
-    const codeList = codes
-      .split(/[\s,]+/)
-      .map((c) => c.replace(/\D/g, ""))
-      .filter((c) => c.length === 6);
+    const codeList = codes.filter((c) => /^\d{6}$/.test(c));
     if (codeList.length === 0) return;
 
     setBusy(true);
@@ -157,17 +163,20 @@ export function ScannerPanel() {
             </select>
           )}
         </div>
-        <label className={styles.label} htmlFor="codes">
-          {t("codesLabel")}
-        </label>
-        <textarea
-          id="codes"
-          className={styles.textarea}
-          rows={2}
+        <StockPicker
           value={codes}
-          onChange={(e) => setCodes(e.target.value)}
+          names={names}
+          onChange={(c, n) => {
+            setCodes(c);
+            setNames(n);
+          }}
+          max={20}
         />
-        <button className={styles.runBtn} onClick={() => void run()} disabled={busy}>
+        <button
+          className={styles.runBtn}
+          onClick={() => void run()}
+          disabled={busy || codes.length === 0}
+        >
           {busy ? t("running") : t("run")}
         </button>
       </div>
@@ -207,7 +216,9 @@ export function ScannerPanel() {
                       className={`${styles.rowClickable} ${selectedCode === r.code ? styles.rowSelected : ""}`}
                       onClick={() => void selectRow(r.code)}
                     >
-                      <td className={styles.sym}>{r.code}</td>
+                      <td className={styles.sym}>
+                        {names[r.code] ? `${names[r.code]} (${r.code})` : r.code}
+                      </td>
                       <td>{nf.format(r.price)}</td>
                       <td className={r.changePct >= 0 ? styles.up : styles.down}>
                         {pf.format(r.changePct)}
