@@ -76,6 +76,9 @@ export function StrategyList() {
             <div className={styles.name}>{s.name}</div>
             <div className={styles.meta}>
               {s.description && <span>{s.description}</span>}
+              {s.versionCount > 1 && (
+                <span>{t("versionsCount", { n: s.versionCount })}</span>
+              )}
               {s.updatedAt && (
                 <span>
                   {t("updated")} {fmt.format(s.updatedAt)}

@@ -114,6 +114,71 @@
   padding: var(--space-3);
 }
 
+.saveBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.saveModes {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.modeBtn {
+  padding: var(--space-1) var(--space-3);
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border: none;
+}
+
+.modeActive {
+  background: color-mix(in srgb, var(--brand) 16%, transparent);
+  color: var(--brand);
+}
+
+.saveFields {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.saveSelect {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-app);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.saveInput {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-app);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.saveInput:focus,
+.saveSelect:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.saveRow {
+  padding-top: 0;
+}
+
 .saveBtn {
   padding: var(--space-2) var(--space-4);
   background: var(--signal-buy);

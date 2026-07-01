@@ -71,6 +71,7 @@
       "loading": "Loading…",
       "loadFailed": "Failed to load the list.",
       "version": "Version",
+      "versionsCount": "{n} versions",
       "updated": "Updated"
     },
     "backtest": {
@@ -202,7 +203,13 @@
     "saveNamePrompt": "Enter a strategy name",
     "saving": "Saving…",
     "saved": "Saved · see it in your strategy list",
+    "savedVersion": "Saved as a new version",
     "saveFailed": "Save failed",
+    "saveAsNew": "Save as new strategy",
+    "saveAsVersion": "New version of existing",
+    "pickStrategy": "Select strategy",
+    "changeSummary": "Change summary",
+    "changeSummaryPlaceholder": "e.g. stop -3%→-2%, volume 5x→4x",
     "notConfigured": "AI chat is unavailable because OPENAI_API_KEY is not set. Check server environment variables.",
     "error": "Something went wrong handling the AI response.",
     "disclaimer": "AI output is a formalization of your own strategy conditions, not investment advice or a stock recommendation. You remain the decision-maker."

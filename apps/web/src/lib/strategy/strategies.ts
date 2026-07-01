@@ -23,7 +23,15 @@ export type StrategySummary = {
   name: string;
   description: string;
   currentVersion: string;
+  versionCount: number;
   updatedAt: number | null;
+};
+
+export type StrategyVersion = {
+  version: string;
+  parentVersion: string | null;
+  changeSummary: string;
+  createdAt: number | null;
 };
 
 /**
@@ -48,6 +56,7 @@ export async function createStrategy(
     name: input.name,
     description: input.description ?? "",
     currentVersion: versionId,
+    versionCount: 1,
     createdFrom: "chat",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -62,6 +71,68 @@ export async function createStrategy(
   });
   await batch.commit();
   return strategyRef.id;
+}
+
+/**
+ * 기존 전략에 새 버전을 추가한다(불변 진화, docs/05 §5.3).
+ * currentVersion을 parent로 기록하고 versionCount를 올린다. 반환: 새 버전 id.
+ */
+export async function addStrategyVersion(
+  db: Firestore,
+  ownerUid: string,
+  strategyId: string,
+  input: { dsl: StrategyDSL; changeSummary: string },
+): Promise<string> {
+  const strategyRef = doc(db, "strategies", strategyId);
+  const sdoc = await getDoc(strategyRef);
+  if (!sdoc.exists()) throw new Error("strategy not found");
+  const data = sdoc.data();
+  const parent = (data.currentVersion as string) ?? "v1";
+  const count = (data.versionCount as number) ?? 1;
+  const nextVersion = `v${count + 1}`;
+  const versionRef = doc(
+    collection(db, "strategies", strategyId, "versions"),
+    nextVersion,
+  );
+
+  const batch = writeBatch(db);
+  batch.set(versionRef, {
+    version: nextVersion,
+    parentVersion: parent,
+    dsl: input.dsl,
+    changeSummary: input.changeSummary || "변경 요약 없음",
+    createdBy: ownerUid,
+    createdAt: serverTimestamp(),
+  });
+  batch.update(strategyRef, {
+    currentVersion: nextVersion,
+    versionCount: count + 1,
+    updatedAt: serverTimestamp(),
+  });
+  await batch.commit();
+  return nextVersion;
+}
+
+/** 전략의 버전 이력(최신순). */
+export async function listVersions(
+  db: Firestore,
+  strategyId: string,
+): Promise<StrategyVersion[]> {
+  const q = query(
+    collection(db, "strategies", strategyId, "versions"),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => {
+    const data = d.data();
+    const at = data.createdAt as { toMillis?: () => number } | undefined;
+    return {
+      version: (data.version as string) ?? d.id,
+      parentVersion: (data.parentVersion as string | null) ?? null,
+      changeSummary: (data.changeSummary as string) ?? "",
+      createdAt: at?.toMillis ? at.toMillis() : null,
+    };
+  });
 }
 
 /** 전략의 현재 버전 DSL을 읽는다. 없으면 null. (백테스트용) */
@@ -98,6 +169,7 @@ export async function listStrategies(
       name: (data.name as string) ?? "(이름 없음)",
       description: (data.description as string) ?? "",
       currentVersion: (data.currentVersion as string) ?? "v1",
+      versionCount: (data.versionCount as number) ?? 1,
       updatedAt: updated?.toMillis ? updated.toMillis() : null,
     };
   });

@@ -71,6 +71,7 @@
       "loading": "불러오는 중…",
       "loadFailed": "목록을 불러오지 못했습니다.",
       "version": "버전",
+      "versionsCount": "{n}개 버전",
       "updated": "수정"
     },
     "backtest": {
@@ -202,7 +203,13 @@
     "saveNamePrompt": "전략 이름을 입력하세요",
     "saving": "저장 중…",
     "saved": "저장됨 · 전략 목록에서 확인하세요",
+    "savedVersion": "새 버전으로 저장됨",
     "saveFailed": "저장 실패",
+    "saveAsNew": "새 전략으로 저장",
+    "saveAsVersion": "기존 전략에 새 버전",
+    "pickStrategy": "전략 선택",
+    "changeSummary": "변경 요약",
+    "changeSummaryPlaceholder": "예: 손절 폭 -3%→-2%, 거래량 5배→4배",
     "notConfigured": "OPENAI_API_KEY가 설정되지 않아 AI 대화를 사용할 수 없습니다. 서버 환경변수를 확인하세요.",
     "error": "AI 응답 처리 중 문제가 발생했습니다.",
     "disclaimer": "AI 산출물은 사용자가 정의한 전략 조건의 형식화이며, 투자 자문·종목 추천이 아닙니다. 판단의 주체는 사용자입니다."
