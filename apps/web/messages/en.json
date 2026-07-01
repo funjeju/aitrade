@@ -46,6 +46,13 @@
     "kpiNoBacktest": "You have strategies but no saved backtests, so performance is not shown.",
     "guestHint": "Sign in to aggregate your strategies and performance.",
     "loading": "Aggregating…",
+    "perfTitle": "Per-strategy performance (out-of-sample)",
+    "perfReturn": "Avg. return",
+    "perfTrades": "trades",
+    "quickLinks": "Quick links",
+    "goScanner": "Scanner",
+    "goChat": "AI Strategy Chat",
+    "goWatch": "Watchlist",
     "disclaimer": "Performance shown is based on historical data and does not guarantee future returns. You remain the sole decision-maker."
   },
   "chart": {

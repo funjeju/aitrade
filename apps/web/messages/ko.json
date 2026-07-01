@@ -46,6 +46,13 @@
     "kpiNoBacktest": "전략은 있으나 저장된 백테스트가 없어 성과는 표시되지 않습니다.",
     "guestHint": "로그인하면 내 전략·성과가 집계됩니다.",
     "loading": "집계 중…",
+    "perfTitle": "전략별 성과 (out-of-sample)",
+    "perfReturn": "평균수익",
+    "perfTrades": "거래",
+    "quickLinks": "바로가기",
+    "goScanner": "스캐너",
+    "goChat": "AI 전략 대화",
+    "goWatch": "관심종목",
     "disclaimer": "표시되는 성과는 과거 데이터 기반이며 미래 수익을 보장하지 않습니다. 모든 판단의 주체는 사용자입니다."
   },
   "chart": {
