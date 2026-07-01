@@ -44,6 +44,51 @@
     },
     "disclaimer": "Performance shown is based on historical data and does not guarantee future returns. You remain the sole decision-maker."
   },
+  "pages": {
+    "phaseBadge": "Phase {n}",
+    "comingSoon": "Coming soon",
+    "strategies": {
+      "desc": "Manage your strategies and their immutable version history. Each version keeps its change summary and performance.",
+      "phase": "1"
+    },
+    "backtest": {
+      "desc": "Out-of-sample split and walk-forward by default. Win rate, avg return, MDD and holding days shown with method, period and sample size.",
+      "phase": "1",
+      "guard": "Structurally blocks overfitting, look-ahead and survivorship bias (backtest guard)."
+    },
+    "scanner": {
+      "desc": "Scans in real time for symbols matching your active strategy conditions. Available after data vendor integration.",
+      "phase": "2"
+    },
+    "alerts": {
+      "desc": "Get notified when strategy conditions are met.",
+      "phase": "2"
+    },
+    "trades": {
+      "desc": "System-trading log that places orders only when your defined conditions are met. Opens after regulatory review.",
+      "phase": "3"
+    },
+    "marketplace": {
+      "desc": "Share and subscribe to strategies. Not opened until advisory-classification is confirmed.",
+      "phase": "4"
+    }
+  },
+  "aiChat": {
+    "title": "AI Strategy Chat",
+    "subtitle": "Describe your trading principles in plain language; we ask for missing conditions and turn them into verifiable rules (DSL).",
+    "placeholder": "e.g. After a big candle up 20%+, I want to buy in splits on the pullback",
+    "send": "Send",
+    "sending": "Generating…",
+    "intro": "Describe your strategy in words. The AI asks for missing conditions by number. (This formalizes your conditions into rules — it is not a stock recommendation.)",
+    "questionsTitle": "To finalize, please specify",
+    "dslTitle": "Strategy rule draft (DSL)",
+    "transparencyTitle": "Formulas (transparency)",
+    "saveDraft": "Save this strategy",
+    "saveNote": "Saving is coming soon. For now, rule generation and validation work.",
+    "notConfigured": "AI chat is unavailable because OPENAI_API_KEY is not set. Check server environment variables.",
+    "error": "Something went wrong handling the AI response.",
+    "disclaimer": "AI output is a formalization of your own strategy conditions, not investment advice or a stock recommendation. You remain the decision-maker."
+  },
   "settings": {
     "title": "Settings",
     "kiwoom": {

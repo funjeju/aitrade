@@ -5,7 +5,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@ats/ui"],
+  transpilePackages: ["@ats/ui", "@ats/strategy-engine"],
 };
 
 export default withNextIntl(nextConfig);

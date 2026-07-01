@@ -16,6 +16,7 @@
     "i18n:check": "tsx scripts/i18n-check.ts"
   },
   "dependencies": {
+    "@ats/strategy-engine": "workspace:*",
     "@ats/ui": "workspace:*",
     "firebase": "^11.1.0",
     "firebase-admin": "^13.0.2",
