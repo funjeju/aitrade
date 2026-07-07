@@ -12,6 +12,12 @@ import {
   listStrategies,
   type StrategySummary,
 } from "@/lib/strategy/strategies";
+import {
+  saveSession,
+  listSessions,
+  getSessionThread,
+  type ChatSessionSummary,
+} from "@/lib/chat/sessions";
 import styles from "./ChatPanel.module.css";
 
 type Turn = { role: "user" | "assistant"; content: string };
@@ -32,45 +38,102 @@ const THREAD_KEY = "ats-chat-thread";
 
 export function ChatPanel({ configured }: { configured: boolean }) {
   const t = useTranslations("aiChat");
+  const { user } = useAuth();
   const [items, setItems] = useState<ThreadItem[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [restored, setRestored] = useState(false);
+  const [restored, setRestored] = useState<false | "local" | "cloud">(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
   const threadRef = useRef<HTMLDivElement>(null);
+  const loadedForUser = useRef<string | "guest" | null>(null);
 
-  // 마운트 시 이 브라우저에 저장된 대화 복원.
+  // 마운트/로그인 시 대화 복원.
+  // 로그인 → Firestore 최근 세션(기기 간 유지). 게스트 → localStorage.
   useEffect(() => {
+    const key = user ? user.uid : "guest";
+    if (loadedForUser.current === key) return;
+    loadedForUser.current = key;
+
+    if (user) {
+      const db = getFirebaseDb();
+      if (!db) return;
+      let alive = true;
+      (async () => {
+        const list = await listSessions(db, user.uid).catch(() => []);
+        if (!alive) return;
+        setSessions(list);
+        if (list[0]) {
+          const thread = await getSessionThread(db, list[0].id).catch(() => null);
+          if (alive && Array.isArray(thread) && thread.length > 0) {
+            setItems(thread as ThreadItem[]);
+            setSessionId(list[0].id);
+            setRestored("cloud");
+          }
+        }
+      })();
+      return () => {
+        alive = false;
+      };
+    }
+
+    // 게스트: localStorage
     try {
       const raw = localStorage.getItem(THREAD_KEY);
       if (raw) {
         const saved = JSON.parse(raw) as ThreadItem[];
         if (Array.isArray(saved) && saved.length > 0) {
           setItems(saved);
-          setRestored(true);
+          setRestored("local");
         }
       }
     } catch {
-      /* 손상 시 무시 */
+      /* 무시 */
     }
-  }, []);
+  }, [user]);
 
-  // 대화가 바뀔 때마다 저장(사라지지 않게).
-  useEffect(() => {
-    try {
-      if (items.length > 0) localStorage.setItem(THREAD_KEY, JSON.stringify(items));
-    } catch {
-      /* 용량 초과 등 무시 */
+  // 대화가 바뀔 때마다 저장. 로그인 → Firestore 세션 upsert, 게스트 → localStorage.
+  async function persist(thread: ThreadItem[]) {
+    if (thread.length === 0) return;
+    if (user) {
+      const db = getFirebaseDb();
+      if (!db) return;
+      const id = await saveSession(db, user.uid, sessionId, thread).catch(() => null);
+      if (id && id !== sessionId) {
+        setSessionId(id);
+        // 새 세션이면 목록 갱신
+        listSessions(db, user.uid).then(setSessions).catch(() => {});
+      }
+    } else {
+      try {
+        localStorage.setItem(THREAD_KEY, JSON.stringify(thread));
+      } catch {
+        /* 무시 */
+      }
     }
-  }, [items]);
+  }
 
   function clearChat() {
     setItems([]);
     setRestored(false);
+    setSessionId(null); // 다음 저장 시 새 세션 생성
     try {
       localStorage.removeItem(THREAD_KEY);
     } catch {
       /* 무시 */
+    }
+  }
+
+  async function openSession(id: string) {
+    if (!user || id === sessionId) return;
+    const db = getFirebaseDb();
+    if (!db) return;
+    const thread = await getSessionThread(db, id).catch(() => null);
+    if (Array.isArray(thread)) {
+      setItems(thread as ThreadItem[]);
+      setSessionId(id);
+      setRestored("cloud");
     }
   }
 
@@ -100,11 +163,18 @@ export function ChatPanel({ configured }: { configured: boolean }) {
       const data = await res.json();
       if (!res.ok) {
         setError(data?.message || t("error"));
+        void persist(nextItems); // 최소한 사용자 메시지는 보존
       } else {
-        setItems((prev) => [...prev, { kind: "ai", reply: data as AiReply }]);
+        const finalThread: ThreadItem[] = [
+          ...nextItems,
+          { kind: "ai", reply: data as AiReply },
+        ];
+        setItems(finalThread);
+        void persist(finalThread);
       }
     } catch {
       setError(t("error"));
+      void persist(nextItems);
     } finally {
       setBusy(false);
       requestAnimationFrame(() => {
@@ -126,9 +196,30 @@ export function ChatPanel({ configured }: { configured: boolean }) {
 
   return (
     <div className={styles.wrap}>
-      {items.length > 0 && (
+      {(items.length > 0 || sessions.length > 0) && (
         <div className={styles.toolbar}>
-          {restored && <span className={styles.restored}>{t("restored")}</span>}
+          {restored && (
+            <span className={styles.restored}>
+              {restored === "cloud" ? t("restoredCloud") : t("restored")}
+            </span>
+          )}
+          {sessions.length > 0 && (
+            <select
+              className={styles.sessionPick}
+              value={sessionId ?? ""}
+              onChange={(e) => void openSession(e.target.value)}
+              aria-label={t("pickSession")}
+            >
+              <option value="" disabled>
+                {t("pickSession")}
+              </option>
+              {sessions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.title}
+                </option>
+              ))}
+            </select>
+          )}
           <button type="button" className={styles.newChatBtn} onClick={clearChat}>
             {t("newChat")}
           </button>

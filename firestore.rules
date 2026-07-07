@@ -59,6 +59,13 @@ service cloud.firestore {
       allow update: if false; // 스캔 시점 스냅샷은 불변
     }
 
+    // AI 전략 대화 세션: 소유자만. (기기 간 유지)
+    match /chatSessions/{sessionId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsNew();
+      allow update: if ownsExisting() && request.resource.data.ownerUid == request.auth.uid;
+    }
+
     // 사용자 프로필: 본인만.
     match /users/{uid} {
       allow read, write: if isSignedIn() && request.auth.uid == uid;
