@@ -28,13 +28,51 @@ type ThreadItem =
   | { kind: "user"; text: string }
   | { kind: "ai"; reply: AiReply };
 
+const THREAD_KEY = "ats-chat-thread";
+
 export function ChatPanel({ configured }: { configured: boolean }) {
   const t = useTranslations("aiChat");
   const [items, setItems] = useState<ThreadItem[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
   const threadRef = useRef<HTMLDivElement>(null);
+
+  // 마운트 시 이 브라우저에 저장된 대화 복원.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(THREAD_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as ThreadItem[];
+        if (Array.isArray(saved) && saved.length > 0) {
+          setItems(saved);
+          setRestored(true);
+        }
+      }
+    } catch {
+      /* 손상 시 무시 */
+    }
+  }, []);
+
+  // 대화가 바뀔 때마다 저장(사라지지 않게).
+  useEffect(() => {
+    try {
+      if (items.length > 0) localStorage.setItem(THREAD_KEY, JSON.stringify(items));
+    } catch {
+      /* 용량 초과 등 무시 */
+    }
+  }, [items]);
+
+  function clearChat() {
+    setItems([]);
+    setRestored(false);
+    try {
+      localStorage.removeItem(THREAD_KEY);
+    } catch {
+      /* 무시 */
+    }
+  }
 
   async function send() {
     const text = input.trim();
@@ -88,6 +126,14 @@ export function ChatPanel({ configured }: { configured: boolean }) {
 
   return (
     <div className={styles.wrap}>
+      {items.length > 0 && (
+        <div className={styles.toolbar}>
+          {restored && <span className={styles.restored}>{t("restored")}</span>}
+          <button type="button" className={styles.newChatBtn} onClick={clearChat}>
+            {t("newChat")}
+          </button>
+        </div>
+      )}
       <div className={styles.thread} ref={threadRef}>
         {items.length === 0 && <p className={styles.intro}>{t("intro")}</p>}
         {items.map((it, i) =>

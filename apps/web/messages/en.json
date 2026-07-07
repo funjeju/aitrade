@@ -210,6 +210,8 @@
     "placeholder": "e.g. After a big candle up 20%+, I want to buy in splits on the pullback",
     "send": "Send",
     "sending": "Generating…",
+    "newChat": "New chat",
+    "restored": "Restored your previous conversation. (auto-saved in this browser)",
     "intro": "Describe your strategy in words. The AI asks for missing conditions by number. (This formalizes your conditions into rules — it is not a stock recommendation.)",
     "questionsTitle": "To finalize, please specify",
     "dslTitle": "Strategy rule draft (DSL)",
