@@ -305,10 +305,14 @@ function SaveRow({ dsl }: { dsl: StrategyDSL }) {
   if (state.status === "savedNew" || state.status === "savedVersion") {
     return (
       <div className={styles.block}>
-        <div className={styles.saveRow}>
+        <div className={styles.saveBody}>
           <span className={styles.saveNote}>
             ✓ {state.status === "savedVersion" ? t("savedVersion") : t("saved")}
           </span>
+          <Link href="/scanner" className={styles.scanLink}>
+            {t("goScan")}
+          </Link>
+          <span className={styles.saveNote}>{t("scanNote")}</span>
         </div>
       </div>
     );

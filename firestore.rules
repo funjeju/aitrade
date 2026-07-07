@@ -14,6 +14,19 @@ service cloud.firestore {
     function ownsExisting() {
       return isSignedIn() && resource.data.ownerUid == request.auth.uid;
     }
+    function parentStrategy(strategyId) {
+      return get(/databases/$(database)/documents/strategies/$(strategyId));
+    }
+    function strategyExists(strategyId) {
+      return exists(/databases/$(database)/documents/strategies/$(strategyId));
+    }
+    // 상위 전략의 소유자인지. 배치로 전략+첫버전을 동시 생성할 땐 부모가 아직 없으므로
+    // (부모 미존재 || 부모 소유자==본인)로 판정한다.
+    function ownsParentStrategy(strategyId) {
+      return isSignedIn()
+        && (!strategyExists(strategyId)
+            || parentStrategy(strategyId).data.ownerUid == request.auth.uid);
+    }
 
     // 전략: 소유자만. 생성 시 ownerUid는 본인이어야.
     match /strategies/{strategyId} {
@@ -21,17 +34,19 @@ service cloud.firestore {
       allow create: if ownsNew();
 
       // 버전: 상위 전략 소유자만. (불변 — update/delete 금지)
+      // 생성은 본인이 stamp한 createdBy + 부모 소유권으로 판정(배치 생성 대응).
       match /versions/{versionId} {
-        allow read: if isSignedIn()
-          && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+        allow read: if isSignedIn() && strategyExists(strategyId)
+          && parentStrategy(strategyId).data.ownerUid == request.auth.uid;
         allow create: if isSignedIn()
-          && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+          && request.resource.data.createdBy == request.auth.uid
+          && ownsParentStrategy(strategyId);
         allow update, delete: if false;
 
         // 백테스트 결과
         match /backtests/{backtestId} {
-          allow read, create: if isSignedIn()
-            && get(/databases/$(database)/documents/strategies/$(strategyId)).data.ownerUid == request.auth.uid;
+          allow read, create: if isSignedIn() && strategyExists(strategyId)
+            && parentStrategy(strategyId).data.ownerUid == request.auth.uid;
           allow update, delete: if false;
         }
       }

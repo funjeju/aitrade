@@ -225,6 +225,8 @@
     "saving": "Saving…",
     "saved": "Saved · see it in your strategy list",
     "savedVersion": "Saved as a new version",
+    "goScan": "Search stocks with these conditions in the scanner →",
+    "scanNote": "Pick this saved strategy in the scanner to find matching stocks via ① Screening.",
     "saveFailed": "Save failed",
     "saveAsNew": "Save as new strategy",
     "saveAsVersion": "New version of existing",

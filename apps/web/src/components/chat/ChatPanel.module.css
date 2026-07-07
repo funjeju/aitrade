@@ -203,6 +203,20 @@
   font-weight: 600;
 }
 
+.scanLink {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.scanLink:hover {
+  filter: brightness(1.06);
+}
+
 .saveNote {
   font-size: var(--text-xs);
   color: var(--text-muted);
