@@ -8,7 +8,8 @@ import styles from "./LoginForm.module.css";
 
 export function LoginForm() {
   const t = useTranslations("auth.login");
-  const { configured, user, signInEmail, signUpEmail, signInAnon } = useAuth();
+  const { configured, user, signInEmail, signUpEmail, signInAnon, signInGoogle } =
+    useAuth();
   const router = useRouter();
 
   const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
@@ -103,6 +104,18 @@ export function LoginForm() {
             </form>
 
             <div className={styles.divider}>{t("or")}</div>
+
+            <button
+              type="button"
+              className={styles.google}
+              disabled={busy}
+              onClick={() => void run(signInGoogle)}
+            >
+              <span className={styles.googleG} aria-hidden>
+                G
+              </span>
+              {t("googleBtn")}
+            </button>
 
             <button
               type="button"

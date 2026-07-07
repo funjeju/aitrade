@@ -13,6 +13,8 @@ import {
   signInAnonymously,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut as fbSignOut,
   type User,
 } from "firebase/auth";
@@ -27,6 +29,7 @@ type AuthState = {
   signInAnon: () => Promise<void>;
   signInEmail: (email: string, password: string) => Promise<void>;
   signUpEmail: (email: string, password: string) => Promise<void>;
+  signInGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -82,6 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       signUpEmail: async (email, password) => {
         await createUserWithEmailAndPassword(auth(), email, password);
+      },
+      signInGoogle: async () => {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        await signInWithPopup(auth(), provider);
       },
       signOut: async () => {
         await fbSignOut(auth());

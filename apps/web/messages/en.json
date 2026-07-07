@@ -276,6 +276,7 @@
       "password": "Password",
       "signInBtn": "Sign in",
       "signUpBtn": "Sign up",
+      "googleBtn": "Continue with Google",
       "anonBtn": "Quick start anonymously",
       "or": "or",
       "notConfigured": "Firebase auth is not configured. Check environment variables.",
