@@ -141,32 +141,93 @@ function AiMessage({ reply }: { reply: AiReply }) {
       )}
 
       {reply.mode === "draft" && reply.dsl != null && (
-        <>
-          <div className={styles.block}>
-            <div className={styles.blockHead}>{t("dslTitle")}</div>
-            <pre className={styles.code}>{JSON.stringify(reply.dsl, null, 2)}</pre>
-          </div>
-
-          {reply.transparency.length > 0 && (
-            <div className={styles.block}>
-              <div className={styles.blockHead}>{t("transparencyTitle")}</div>
-              <table className={styles.table}>
-                <tbody>
-                  {reply.transparency.map((row, i) => (
-                    <tr key={i}>
-                      <td>{row.param}</td>
-                      <td>{row.formula}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <SaveRow dsl={reply.dsl as StrategyDSL} />
-        </>
+        <DraftView dsl={reply.dsl as StrategyDSL} transparency={reply.transparency} />
       )}
     </>
+  );
+}
+
+type TRow = { param: string; formula: string };
+
+/** DSL/transparency를 조건검색·매매기준 두 섹션으로 나눠 보여준다. */
+function DraftView({ dsl, transparency }: { dsl: StrategyDSL; transparency: TRow[] }) {
+  const t = useTranslations("aiChat");
+
+  // 조건검색: 어떤 종목을 찾을지
+  const screeningDsl = {
+    universe: dsl.universe,
+    referenceCandle: dsl.referenceCandle,
+    pullback: dsl.entry.pullback,
+    volumeHealth: dsl.entry.volumeHealth,
+    maSlope: dsl.entry.maSlope,
+  };
+  // 매매기준: 찾은 종목을 어떻게 매매할지
+  const tradingDsl = {
+    splits: dsl.entry.splits,
+    exit: dsl.exit,
+  };
+
+  const isTrading = (p: string) =>
+    p.startsWith("entry.splits") || p.startsWith("exit") || p.startsWith("splits");
+  const screeningRows = transparency.filter((r) => !isTrading(r.param));
+  const tradingRows = transparency.filter((r) => isTrading(r.param));
+
+  return (
+    <>
+      <Section
+        title={t("screeningTitle")}
+        hint={t("screeningHint")}
+        dsl={screeningDsl}
+        rows={screeningRows}
+      />
+      <Section
+        title={t("tradingTitle")}
+        hint={t("tradingHint")}
+        dsl={tradingDsl}
+        rows={tradingRows}
+      />
+      <SaveRow dsl={dsl} />
+    </>
+  );
+}
+
+function Section({
+  title,
+  hint,
+  dsl,
+  rows,
+}: {
+  title: string;
+  hint: string;
+  dsl: unknown;
+  rows: TRow[];
+}) {
+  const t = useTranslations("aiChat");
+  return (
+    <div className={styles.block}>
+      <div className={styles.blockHead}>{title}</div>
+      <p className={styles.sectionHint}>{hint}</p>
+      <pre className={styles.code}>{JSON.stringify(dsl, null, 2)}</pre>
+      {rows.length > 0 && (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <td colSpan={2} className={styles.tableCaption}>
+                {t("transparencyTitle")}
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                <td>{row.param}</td>
+                <td>{row.formula}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 }
 

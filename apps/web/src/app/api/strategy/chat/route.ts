@@ -22,6 +22,70 @@ type ChatReply = {
   transparency: Array<{ param: string; formula: string }>;
 };
 
+/** 문자열/퍼센트를 숫자·소수로 보정. ratio01=true면 1 초과값은 퍼센트로 보고 /100. */
+function num(v: unknown, ratio01: boolean, fallback: number): number {
+  let n = typeof v === "string" ? parseFloat(v) : typeof v === "number" ? v : NaN;
+  if (!Number.isFinite(n)) return fallback;
+  if (ratio01 && n > 1) n = n / 100; // 20 → 0.20, 5 → 0.05
+  return n;
+}
+
+function obj(v: unknown): Record<string, unknown> {
+  return v && typeof v === "object" ? (v as Record<string, unknown>) : {};
+}
+
+/**
+ * 모델이 낸 DSL을 검증 통과 가능하게 보정한다.
+ * - 누락 필수 필드는 기본값으로 채운다(사용자는 초안에서 고칠 수 있음).
+ * - 비율 필드의 퍼센트/문자열 실수를 소수로 정규화한다.
+ * 이렇게 해서 "draft가 자꾸 ask로 되돌아가는" 문제를 없앤다.
+ */
+function normalizeChatDsl(input: unknown): Record<string, unknown> {
+  const d = obj(input);
+  const rc = obj(d.referenceCandle);
+  const entry = obj(d.entry);
+  const pb = obj(entry.pullback);
+  const exit = obj(d.exit);
+  const stop = obj(exit.stop);
+
+  const bodyMid = obj(pb.toBodyMid);
+  const toOpen = pb.toOpen != null ? obj(pb.toOpen) : null;
+  const nearMA = pb.nearMA != null ? obj(pb.nearMA) : { period: 10, pct: 0.03 };
+  const volHealth = entry.volumeHealth != null ? obj(entry.volumeHealth) : { decayRatio: 0.6 };
+  const maSlope = entry.maSlope != null ? obj(entry.maSlope) : { period: 20, minSlope: 0 };
+
+  return {
+    universe: { market: obj(d.universe).market === "US" ? "US" : "KR" },
+    leader: d.leader ?? { rankBy: ["relStrength", "volSurge"], topN: 3 },
+    referenceCandle: {
+      highGainFromOpen: num(rc.highGainFromOpen, true, 0.2),
+      closeNearHighPct: num(rc.closeNearHighPct, true, 0.05),
+      volMultVsPrev: num(rc.volMultVsPrev, false, 5),
+      lookbackDays: num(rc.lookbackDays, false, 10),
+    },
+    entry: {
+      pullback: {
+        toBodyMid: { tolerance: num(bodyMid.tolerance, true, 0.02) },
+        ...(toOpen ? { toOpen: { tolerance: num(toOpen.tolerance, true, 0.02) } } : {}),
+        nearMA: { period: num(nearMA.period, false, 10), pct: num(nearMA.pct, true, 0.03) },
+      },
+      volumeHealth: { decayRatio: num(volHealth.decayRatio, true, 0.6) },
+      maSlope: { period: num(maSlope.period, false, 20), minSlope: num(maSlope.minSlope, false, 0) },
+      splits: Array.isArray(entry.splits) && entry.splits.length > 0
+        ? entry.splits
+        : [{ at: "bodyMid", weight: 0.5 }, { at: "open", weight: 0.5 }],
+    },
+    exit: {
+      trailing: exit.trailing ?? { type: "atr", mult: 2 },
+      maExit: exit.maExit ?? { period: 5 },
+      stop: {
+        basis: (stop.basis as string) ?? "refCandleLow",
+        buffer: num(stop.buffer, true, 0),
+      },
+    },
+  };
+}
+
 export async function POST(request: Request) {
   if (!isLlmConfigured()) {
     return NextResponse.json(
@@ -64,10 +128,15 @@ export async function POST(request: Request) {
     transparency: Array.isArray(parsed.transparency) ? parsed.transparency : [],
   };
 
-  // draft면 서버에서 DSL 스키마 검증(P4). 실패 시 ask로 강등하고 이유를 questions에 담는다.
+  // draft면 보정(기본값 채움 + 퍼센트/문자열 정규화) 후 검증한다.
+  // 보정 덕분에 거의 항상 통과 → "draft가 ask로 되돌아가는" 문제 없음(P4).
   if (result.mode === "draft" && result.dsl) {
-    const v = validateStrategyDSL(result.dsl);
-    if (!v.ok) {
+    const normalized = normalizeChatDsl(result.dsl);
+    const v = validateStrategyDSL(normalized);
+    if (v.ok) {
+      result.dsl = normalized;
+    } else {
+      // 극히 예외: 보정 후에도 실패하면 그때만 되묻는다.
       result.mode = "ask";
       result.dsl = null;
       result.reply = result.reply || "전략을 확정하려면 아래 항목이 더 필요합니다.";
